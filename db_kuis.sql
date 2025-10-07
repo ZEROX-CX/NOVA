@@ -1,11 +1,4 @@
 -- --------------------------------------------------------
--- Struktur Database untuk Sistem Kuis Otomatis
--- --------------------------------------------------------
-
-CREATE DATABASE IF NOT EXISTS db_kuis;
-USE db_kuis;
-
--- --------------------------------------------------------
 -- Tabel: soal
 -- --------------------------------------------------------
 CREATE TABLE IF NOT EXISTS soal (
