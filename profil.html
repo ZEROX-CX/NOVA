@@ -8,29 +8,21 @@
 </head>
 
 <body class="bg-[#fffce8] min-h-screen font-sans text-gray-800 flex flex-col">
-  <!-- Navbar -->
-  <header class="flex justify-between items-center bg-white px-4 md:px-8 py-3 shadow-md fixed top-0 left-0 right-0 z-50">
-    <div class="flex items-center gap-3">
-      <!-- Logo -->
-      <img src="logo.png" alt="Logo" class="w-10 h-10 object-contain">
-
-      <!-- Menu -->
-      <nav>
-        <ul class="flex gap-5 text-gray-800 font-medium">
-          <li><a href="#" class="hover:text-blue-600 transition">Beranda</a></li>
-          <li><a href="#" class="hover:text-blue-600 transition">Mapel Ku</a></li>
-        </ul>
-      </nav>
+  <nav class="bg-white shadow-md flex items-center justify-between px-6 py-4">
+    <div class="flex items-center space-x-5 ">
+      <img src="img/logo.svg" alt="Logo" class="w-6 h-6" />
+      <ul class="flex space-x-6 text-[#00007F] font-medium">
+        <li class="border-b-2 border-[#00007F] cursor-pointer">Beranda</li>
+        <li class="hover:text-[#3F3D56] cursor-pointer"><a href="mapel.html">Mapel ku</a></li>
+      </ul>
     </div>
-
-    <!-- Icon user kanan -->
-    <div class="w-8 h-8 bg-gray-200 text-gray-600 rounded-full flex items-center justify-center">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-        <path fill-rule="evenodd" d="M10 2a5 5 0 00-3.535 8.536A7 7 0 003 17h14a7 7 0 00-3.465-6.464A5 5 0 0010 2z" clip-rule="evenodd"/>
-      </svg>
+    <div class="flex items-center">
+        <a href="profile.html">
+            <img src="img/profile.png" alt="profile" class="rounded-full
+             w-6 h-6">
+        </a>
     </div>
-  </header>
-
+  </nav>
   <!-- Konten utama -->
   <main class="flex flex-col items-center px-4 md:px-12 py-24">
     <!-- Profil -->
@@ -86,7 +78,7 @@
           <a href="#">IPA</a>
           <a href="#">Informatika</a>
           <a href="#">IPS</a>
-          <a href="#">B.English</a>
+          <a href="#">B.Inggris</a>
           <a href="#">PAI</a>
           <a href="#">Seni Budaya</a>
           <a href="#">Sejarah</a>
@@ -96,15 +88,47 @@
       </div>
 
       <!-- Hubungi Kami -->
-      <div class="bg-gray-200 rounded-lg p-5 shadow-sm flex items-center justify-center">
-        <a href="#" class="text-blue-600 text-sm font-medium hover:underline">Hubungi Kami</a>
+      <div class="bg-gray-200 rounded-lg p-5 shadow-sm">
+          <p>Achievement Yang Didapatkan</p>
+          <div class="bg-gray-200 p-5 shadow-sm flex justify-between">
+            <ul class="mr-2 ml-2">
+                <li class="mt-2 mb-2">
+                    <div class="bg-white pl-8 pr-8 pt-2 pb-2 rounded-full">
+                        Achievement 1
+                    </div>
+                </li>
+                <li class="mt-2 mb-2">
+                    <div class="bg-white pl-8 pr-8 pt-2 pb-2 rounded-full">
+                        Achievement 1
+                    </div>
+                </li>
+                <li class="mt-2 mb-2">
+                    <div class="bg-white pl-8 pr-8 pt-2 pb-2 rounded-full">
+                        Achievement 1
+                    </div>
+                </li>
+            </ul>
+            <ul class="mr-2 ml-2">
+                <li class="mt-2 mb-2">
+                    <div class="bg-white pl-8 pr-8 pt-2 pb-2 rounded-full">
+                        Achievement 1
+                    </div>
+                </li>
+                <li class="mt-2 mb-2">
+                    <div class="bg-white pl-8 pr-8 pt-2 pb-2 rounded-full">
+                        Achievement 1
+                    </div>
+                </li>
+                <li class="mt-2 mb-2">
+                    <div class="bg-white pl-8 pr-8 pt-2 pb-2 rounded-full">
+                        Achievement 1
+                    </div>
+                </li>
+            </ul>
+        </div>
       </div>
     </div>
   </main>
-
-  <footer class="text-center py-4 text-gray-500 text-sm">
-    &copy; 2025 A-novaWeb. Semua hak dilindungi.
-  </footer>
 
   <script>
     // Contoh script kecil untuk interaktifitas logout
