@@ -4,25 +4,46 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Beranda Siswa</title>
+  <style>
+    .bt{
+      border-bottom: 4px solid #fff;
+      transition: 0.5s;
+    }
+    .bt:hover{
+      border-bottom: 4px solid #00007f3d;
+    }
+    .active {
+      border-bottom: 4px solid #00007f;
+      transition: border-bottom 0.25s;
+    }
+  </style>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-[#FFFFFF] font-sans">
 
   <!-- Navbar -->
-  <nav class="bg-white border-b-2 flex items-center justify-between px-6 py-4">
+  <nav class="bg-white border-b-2 flex items-center justify-between px-6">
     <div class="flex items-center space-x-5 ">
       <img src="img/logo.svg" alt="Logo" class="w-6 h-6" />
-      <ul class="flex space-x-6 text-[#00007F] font-medium">
-        <li class="border-b-2 border-[#00007F] cursor-pointer">Beranda</li>
-        <li class="hover:text-[#3F3D56] cursor-pointer"><a href="mapel.html">Mapel ku</a></li>
+      <ul class="flex text-[#00007F] font-medium">
+        <li class="px-8 py-4 cursor-pointer bt active"><a href="beranda.php">Beranda</a></li>
+        <li class="px-8 py-4 hover:text-[#3F3D56] cursor-pointer bt"><a href="mapel.php">Mapel ku</a></li>
       </ul>
     </div>
     <div class="flex items-center">
-        <a href="img/profile.php">
-            <img src="profile.png" alt="profile" class="rounded-full
+        <a href="profile.php">
+            <img src="img/profile.png" alt="profile" class="rounded-full
              w-6 h-6">
         </a>
     </div>
   </nav>
 </body>
+<script>
+  document.querySelectorAll('.bt').forEach(item => {
+    item.addEventListener('click', () => {
+      document.querySelectorAll('.bt').forEach(el => el.classList.remove('active'));
+      item.classList.add('active');
+    });
+  });
+</script>
 </html>
