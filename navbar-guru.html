@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Beranda Siswa</title>
+  <style>
+    .bt{
+      border-bottom: 4px solid #fff;
+      transition: 0.5s;
+    }
+    .bt:hover{
+      border-bottom: 4px solid #00007f3d;
+    }
+  </style>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-[#FFFFFF] font-sans">
+
+  <!-- Navbar -->
+  <nav class="bg-white border-b-2 flex items-center justify-between px-6">
+    <div class="flex items-center space-x-5 ">
+      <img src="img/logo.svg" alt="Logo" class="w-6 h-6" />
+      <ul class="flex text-[#00007F] font-medium">
+        <li class="px-8 py-4 cursor-pointer bt"><a href="beranda-g.php">Beranda</a></li>
+        <li class="px-8 py-4 hover:text-[#3F3D56] cursor-pointer bt"><a href="kelas.php">Kelas</a></li>
+      </ul>
+    </div>
+    <div class="flex items-center">
+        <a href="profile.php">
+            <img src="img/profile.png" alt="profile" class="rounded-full
+             w-6 h-6">
+        </a>
+    </div>
+  </nav>
+</body>
+</html>
