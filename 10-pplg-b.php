@@ -41,6 +41,7 @@ echo '
             <button class="px-4 py-2 bg-purple-600 text-white rounded-lg font-semibold">Pertemuan 1</button>
             <button class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300">Pertemuan 2</button>
             <button class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300">Pertemuan 3</button>
+            <button class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300">+</button>
           </div>
         
           <!-- Banner Dekoratif -->
