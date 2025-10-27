@@ -12,10 +12,6 @@
     .bt:hover{
       border-bottom: 4px solid #00007f3d;
     }
-    .active {
-      border-bottom: 4px solid #00007f;
-      transition: border-bottom 0.25s;
-    }
   </style>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
@@ -26,7 +22,7 @@
     <div class="flex items-center space-x-5 ">
       <img src="img/logo.svg" alt="Logo" class="w-6 h-6" />
       <ul class="flex text-[#00007F] font-medium">
-        <li class="px-8 py-4 cursor-pointer bt active"><a href="beranda.php">Beranda</a></li>
+        <li class="px-8 py-4 cursor-pointer bt"><a href="beranda.php">Beranda</a></li>
         <li class="px-8 py-4 hover:text-[#3F3D56] cursor-pointer bt"><a href="mapel.php">Mapel ku</a></li>
       </ul>
     </div>
@@ -38,12 +34,4 @@
     </div>
   </nav>
 </body>
-<script>
-  document.querySelectorAll('.bt').forEach(item => {
-    item.addEventListener('click', () => {
-      document.querySelectorAll('.bt').forEach(el => el.classList.remove('active'));
-      item.classList.add('active');
-    });
-  });
-</script>
 </html>
