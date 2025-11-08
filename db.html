@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard Data Siswa</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 font-sans">
+  <div class="max-w-6xl mx-auto mt-10 p-6 bg-white rounded-lg shadow-lg">
+    <h1 class="text-3xl font-bold text-center text-gray-800 mb-6">Dashboard Data Siswa</h1>
+
+    <div class="flex justify-center mb-6">
+      <input
+        type="text"
+        id="searchInput"
+        placeholder="Cari siswa berdasarkan nama..."
+        onkeyup="filterTable()"
+        class="w-80 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+      />
+    </div>
+
+    <div class="overflow-x-auto">
+      <table class="min-w-full bg-white border border-gray-200 rounded-lg">
+        <thead>
+          <tr class="bg-purple-600 text-white">
+            <th class="py-3 px-4 text-left">Nama</th>
+            <th class="py-3 px-4 text-left">Usia</th>
+            <th class="py-3 px-4 text-left">Kelas</th>
+            <th class="py-3 px-4 text-left">Nilai Rata-rata</th>
+          </tr>
+        </thead>
+        <tbody id="studentBody" class="divide-y divide-gray-200">
+          <!-- Data siswa akan diisi oleh JavaScript -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    const students = [
+      { nama: "Ahmad", usia: 15, kelas: "10A", nilai: 85 },
+      { nama: "Budi", usia: 16, kelas: "10B", nilai: 90 },
+      { nama: "Citra", usia: 14, kelas: "9A", nilai: 88 },
+      { nama: "Dewi", usia: 15, kelas: "10A", nilai: 92 },
+      { nama: "Eko", usia: 17, kelas: "11B", nilai: 78 },
+      { nama: "Fina", usia: 16, kelas: "10C", nilai: 95 }
+    ];
+
+    function renderTable(data) {
+      const tbody = document.getElementById('studentBody');
+      tbody.innerHTML = '';
+      data.forEach(student => {
+        const row = document.createElement('tr');
+        row.className = 'hover:bg-gray-100';
+        row.innerHTML = `
+          <td class="py-3 px-4">${student.nama}</td>
+          <td class="py-3 px-4">${student.usia}</td>
+          <td class="py-3 px-4">${student.kelas}</td>
+          <td class="py-3 px-4">${student.nilai}</td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    function filterTable() {
+      const input = document.getElementById('searchInput').value.toLowerCase();
+      const filtered = students.filter(student =>
+        student.nama.toLowerCase().includes(input)
+      );
+      renderTable(filtered);
+    }
+
+    renderTable(students);
+  </script>
+</body>
+</html>
