@@ -118,9 +118,9 @@
 
       
         const activities = [
-        { date: '2025-11-10', name: 'Absensi' },
-        { date: '2025-11-11', name: 'Batas Pengumpulan Tugas - IPAS' },
-        { date: '2025-11-13', name: 'Absensi' },
+        { date: '2025-11-10', name: 'Absensi', url: 'daftar-hadir.php'},
+        { date: '2025-11-11', name: 'Batas Pengumpulan Tugas - "NAMA MAPEL"', url: 'NAMA-MAPEL.php'},
+        { date: '2025-11-13', name: 'Absensi', url: 'daftar-hadir.php'},
       ];
       
       const timeline = document.getElementById('timeline');
@@ -136,10 +136,12 @@
       
         data.forEach(item => {
           timeline.innerHTML += `
-            <div class="border p-3 rounded bg-gray-50">
-              <div class="text-sm text-gray-500">${item.date}</div>
-              <div class="font-medium">${item.name}</div>
-            </div>
+            <a href="${item.url}">
+              <div class="border p-3 rounded bg-gray-50">
+                <div class="text-sm text-gray-500">${item.date}</div>
+                <div class="font-medium">${item.name}</div>
+              </div>
+            </a>
           `;
         });
       }
