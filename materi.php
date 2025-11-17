@@ -1,6 +1,6 @@
 <?php
 include 'navbar.html';
-echo '
+?>
 <!DOCTYPE html>
 <html lang="id">
   <head>
@@ -168,5 +168,7 @@ echo '
     </script>
   </body>
 </html>';
+<?php
+include 'footer.html';
 ?>
 
