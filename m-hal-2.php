@@ -66,7 +66,7 @@ include 'navbar.html';
               </a>
             </div>
             <div class="flex">
-              <a href="m-hal-3.php" class="inline-flex items-center px-4 py-2 bg-purple-600 text-white text-sm font-medium rounded hover:bg-purple-700 transition">
+              <a href="kuis.php" class="inline-flex items-center px-4 py-2 bg-purple-600 text-white text-sm font-medium rounded hover:bg-purple-700 transition">
                 Next
               </a>
             </div>
