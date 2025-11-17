@@ -28,72 +28,50 @@ include 'navbar.html';
     <main class="max-w-7xl mx-auto px-4 py-10 flex flex-col md:flex-row gap-6">
       <!-- Bagian Mapel -->
       <section class="flex-1">
-        <!-- Judul -->
-        <h2 class="text-2xl font-bold text-gray-800 mb-6">Mapel Ku</h2>
 
-        <!-- Search & Sort -->
-        <div class="flex flex-col md:flex-row md:items-center gap-3 mb-6">
-          <div class="flex items-center border border-gray-300 rounded-lg px-3 py-1 bg-white w-full md:w-1/3">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 mr-2" fill="none"
-              viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1110.5 3a7.5 7.5 0 016.15 13.65z" />
-            </svg>
-            <input id="searchInput" type="text" placeholder="Cari"
-              class="w-full outline-none text-gray-700" />
+        <a class="text-lg text-gray-600" href="sejarah.php">< kembali</a>
+        <div class="bg-white rounded-lg shadow-md p-6 border border-gray-200">
+
+          <!-- Banner -->
+          <div class="bg-purple-600 text-white rounded-md p-4 mb-6 flex items-center justify-between">
+            <div class="text-lg font-medium">Materi</div>
+            <div class="flex space-x-2">
+              <div class="w-3 h-3 bg-white rounded-full opacity-30"></div>
+              <div class="w-3 h-3 bg-white rounded-full opacity-30"></div>
+              <div class="w-3 h-3 bg-white rounded-full opacity-30"></div>
+            </div>
           </div>
-          <select id="sortSelect"
-            class="border border-gray-300 rounded-lg px-3 py-2 bg-white text-gray-700 w-full md:w-auto">
-            <option value="a-z">Urutkan A-Z</option>
-            <option value="z-a">Urutkan Z-A</option>
-          </select>
+        
+          <!-- Konten Materi -->
+          <div class="bg-gray-50 border border-gray-300 rounded-md p-5 mb-6">
+            <h3 class="text-md font-semibold text-gray-800 mb-3">Judul Materi</h3>
+            <div class="text-sm text-gray-700 leading-relaxed space-y-4">
+              <p>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+              </p>
+              <p>
+                Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+              </p>
+              <p>
+                Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+              </p>
+            </div>
+          </div>
+
+          <div class="flex justify-between w-full">
+            <div class="flex">
+              <a href="#" class="inline-flex items-center px-4 py-2 bg-white text-purple-600 border  -2 text-sm font-medium rounded hover:bg-purple-700 transition">
+                Prev
+              </a>
+            </div>
+            <div class="flex">
+              <a href="m-hal-2.php" class="inline-flex items-center px-4 py-2 bg-purple-600 text-white text-sm font-medium rounded hover:bg-purple-700 transition">
+                Next
+              </a>
+            </div>
+          </div>
         </div>
-
-        <!-- Grid Mapel -->
-        <div id="mapelContainer" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          <!-- Card Mapel -->
-          <a href="sejarah.php">
-            <div class="border border-gray-300 rounded-xl p-4 bg-white flex flex-col shadow-sm hover:shadow-md transition">
-              <div class="flex items-center justify-between mb-3">
-                <div class="flex items-center gap-3">
-                  <div class="bg-purple-400 w-10 h-10 rounded-lg flex items-center justify-center text-white font-bold text-lg">📘</div>
-                  <div>
-                    <p class="font-semibold text-gray-800">Sejarah</p>
-                    <p class="text-sm text-gray-800">Guru: nama-guru</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </a>
-
-          <a href="matematika.php">
-            <div class="border border-gray-300 rounded-xl p-4 bg-white flex flex-col shadow-sm hover:shadow-md transition">
-              <div class="flex items-center justify-between mb-3">
-                <div class="flex items-center gap-3">
-                  <div class="bg-green-400 w-10 h-10 rounded-lg flex items-center justify-center text-white font-bold text-lg">📗</div>
-                  <div>
-                    <p class="font-semibold text-gray-800">Matematika</p>
-                    <p class="text-sm text-gray-800">Guru: nama-guru</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </a>
-
-          <a href="b-indo.php">
-            <div class="border border-gray-300 rounded-xl p-4 bg-white flex flex-col shadow-sm hover:shadow-md transition">
-              <div class="flex items-center justify-between mb-3">
-                <div class="flex items-center gap-3">
-                  <div class="bg-orange-400 w-10 h-10 rounded-lg flex items-center justify-center text-white font-bold text-lg">📘</div>
-                  <div>
-                    <p class="font-semibold text-gray-800">Bahasa Indonesia</p>
-                    <p class="text-gray-800 text-sm">Guru: nama-guru</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </a>
-        </div>
+        
       </section>
 
       <!-- Notifikasi Desktop -->
@@ -167,8 +145,7 @@ include 'navbar.html';
       });
     </script>
   </body>
-</html>';
+</html>
 <?php
 include 'footer.html';
 ?>
-
