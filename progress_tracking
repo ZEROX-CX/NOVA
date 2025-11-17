@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h2>Progress Siswa ID: <?= htmlspecialchars($data['id_siswa']) ?></h2>
+
+<h3>Ringkasan</h3>
+<ul>
+    <?php if (!empty($data['summary'])): ?>
+        <?php foreach ($data['summary'] as $s): ?>
+            <li>
+                <?= ucfirst($s['tipe_aktivitas']) ?> : 
+                <?= $s['selesai'] ?>/<?= $s['total'] ?> selesai
+            </li>
+        <?php endforeach; ?>
+    <?php else: ?>
+        <li>Belum ada data progress.</li>
+    <?php endif; ?>
+</ul>
+
+<h3>Detail Progress</h3>
+<table border="1" cellpadding="6" cellspacing="0">
+    <tr>
+        <th>Waktu</th>
+        <th>Tipe Aktivitas</th>
+        <th>Status</th>
+        <th>Progress (%)</th>
+        <th>Skor</th>
+        <th>Pertemuan</th>
+        <th>Materi</th>
+        <th>Tugas</th>
+        <th>Game</th>
+    </tr>
+    <?php if (!empty($data['progress'])): ?>
+        <?php foreach ($data['progress'] as $p): ?>
+        <tr>
+            <td><?= $p['created_at'] ?></td>
+            <td><?= $p['tipe_aktivitas'] ?></td>
+            <td><?= $p['status'] ?></td>
+            <td><?= $p['progress_percentage'] ?></td>
+            <td><?= $p['skor'] ?></td>
+            <td><?= $p['id_pertemuan'] ?></td>
+            <td><?= $p['id_materi'] ?></td>
+            <td><?= $p['id_tugas'] ?></td>
+            <td><?= $p['id_game'] ?></td>
+        </tr>
+        <?php endforeach; ?>
+    <?php else: ?>
+        <tr><td colspan="9">Belum ada data progress.</td></tr>
+    <?php endif; ?>
+</table>
+
+</body>
+</html>
