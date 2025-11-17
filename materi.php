@@ -26,6 +26,10 @@ include 'navbar.html';
 
     <!-- Konten Utama -->
     <main class="max-w-7xl mx-auto px-4 py-10 flex flex-col md:flex-row gap-6">
+            
+      <aside class="hidden md:block w-72 bg-white border-gray-300 rounded-xl p-4 shadow-sm">
+      </aside>
+
       <!-- Bagian Mapel -->
       <section class="flex-1">
 
@@ -44,7 +48,7 @@ include 'navbar.html';
         
           <!-- Konten Materi -->
           <div class="bg-gray-50 border border-gray-300 rounded-md p-5 mb-6">
-            <h3 class="text-md font-semibold text-gray-800 mb-3">Judul Materi</h3>
+            <h3 class="text-md font-semibold text-gray-800 mb-3">Judul Materi Halaman Pertama</h3>
             <div class="text-sm text-gray-700 leading-relaxed space-y-4">
               <p>
                 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
@@ -60,7 +64,7 @@ include 'navbar.html';
 
           <div class="flex justify-between w-full">
             <div class="flex">
-              <a href="#" class="inline-flex items-center px-4 py-2 bg-white text-purple-600 border  -2 text-sm font-medium rounded hover:bg-purple-700 transition">
+              <a href="#" class="inline-flex items-center px-4 py-2 bg-white text-purple-600 border-2 text-sm font-medium rounded">
                 Prev
               </a>
             </div>
