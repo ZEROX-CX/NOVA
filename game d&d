@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Science Sort - Drag & Drop IPA SMP</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100%;
+            overflow-x: hidden;
+        }
+
+        html, body {
+            height: 100%;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Halaman Pembuka */
+        .welcome-page {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            min-height: 80%;
+            color: #ffffff;
+        }
+
+        .title {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .subtitle {
+            font-size: 1.5rem;
+            font-weight: 300;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        .science-icons {
+            display: flex;
+            gap: 2rem;
+            margin: 2rem 0;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .icon {
+            font-size: 3rem;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .icon:nth-child(2) { animation-delay: 0.5s; }
+        .icon:nth-child(3) { animation-delay: 1s; }
+        .icon:nth-child(4) { animation-delay: 1.5s; }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .instructions {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            border-radius: 20px;
+            margin: 2rem 0;
+            max-width: 600px;
+        }
+
+        .btn {
+            background: #7f7fff;
+            color: #ffffff;
+            border: none;
+            padding: 1rem 2rem;
+            font-size: 1.2rem;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(127,127,255,0.3);
+        }
+
+        .btn:hover {
+            background: #6666ff;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(127,127,255,0.4);
+        }
+
+        /* Halaman Game */
+        .game-page {
+            display: none;
+            flex-direction: column;
+            min-height: 100%;
+        }
+
+        .game-header {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #ffffff;
+        }
+
+        .game-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .score {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .topic-selector {
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .topic-btn {
+            background: rgba(255,255,255,0.2);
+            color: #ffffff;
+            border: 2px solid transparent;
+            padding: 0.8rem 1.5rem;
+            margin: 0 0.5rem;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .topic-btn.active {
+            background: #7f7fff;
+            border-color: #ffffff;
+        }
+
+        .topic-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .game-area {
+            display: flex;
+            gap: 2rem;
+            flex: 1;
+            min-height: 500px;
+        }
+
+        .items-panel {
+            flex: 1;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2rem;
+        }
+
+        .panel-title {
+            color: #ffffff;
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .items-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 1rem;
+            min-height: 300px;
+        }
+
+        .drag-item {
+            background: #ffffff;
+            color: #333;
+            padding: 1rem;
+            border-radius: 15px;
+            text-align: center;
+            cursor: grab;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            font-weight: 500;
+            user-select: none;
+        }
+
+        .drag-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+        }
+
+        .drag-item.dragging {
+            opacity: 0.5;
+            transform: rotate(5deg);
+        }
+
+        .categories-panel {
+            flex: 1.5;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .drop-zone {
+            flex: 1;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border: 3px dashed rgba(255,255,255,0.3);
+            border-radius: 20px;
+            padding: 2rem;
+            text-align: center;
+            color: #ffffff;
+            transition: all 0.3s ease;
+            min-height: 150px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .drop-zone.drag-over {
+            border-color: #7f7fff;
+            background: rgba(127,127,255,0.2);
+            transform: scale(1.02);
+        }
+
+        .drop-zone h3 {
+            margin: 0 0 1rem 0;
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .dropped-items {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            justify-content: center;
+            margin-top: 1rem;
+        }
+
+        .dropped-item {
+            background: #7f7fff;
+            color: #ffffff;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .game-controls {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+
+        .btn-secondary {
+            background: rgba(255,255,255,0.2);
+            color: #ffffff;
+            border: 2px solid #ffffff;
+        }
+
+        .btn-secondary:hover {
+            background: #ffffff;
+            color: #333;
+        }
+
+        /* Halaman Hasil */
+        .result-page {
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            min-height: 80%;
+            color: #ffffff;
+        }
+
+        .result-icon {
+            font-size: 5rem;
+            margin-bottom: 1rem;
+            animation: bounce 1s ease-in-out;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-20px); }
+            60% { transform: translateY(-10px); }
+        }
+
+        .result-title {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .result-message {
+            font-size: 1.3rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        .result-stats {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            border-radius: 20px;
+            margin: 2rem 0;
+        }
+
+        /* Admin Panel */
+        .admin-panel {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            max-width: 300px;
+            display: none;
+        }
+
+        .admin-panel.show {
+            display: block;
+        }
+
+        .admin-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #7f7fff;
+            color: #ffffff;
+            border: none;
+            padding: 0.5rem;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2rem;
+            z-index: 1000;
+        }
+
+        .admin-section {
+            margin-bottom: 1rem;
+        }
+
+        .admin-section h4 {
+            margin: 0 0 0.5rem 0;
+            color: #333;
+            font-size: 0.9rem;
+        }
+
+        .admin-input {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .admin-btn {
+            background: #7f7fff;
+            color: #ffffff;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            margin-right: 0.5rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .title { font-size: 2.5rem; }
+            .subtitle { font-size: 1.2rem; }
+            .game-area { flex-direction: column; }
+            .science-icons { gap: 1rem; }
+            .icon { font-size: 2rem; }
+            .container { padding: 10px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Halaman Pembuka -->
+        <div class="welcome-page" id="welcomePage">
+            <h1 class="title">Science Sort</h1>
+            <p class="subtitle">Drag & Drop IPA SMP</p>
+            
+            <div class="science-icons">
+                <div class="icon">⚛️</div>
+                <div class="icon">🔬</div>
+                <div class="icon">🌱</div>
+                <div class="icon">🪐</div>
+            </div>
+
+            <div class="instructions">
+                <h3>Cara Bermain:</h3>
+                <p>1. Pilih topik yang ingin dipelajari</p>
+                <p>2. Seret item ke kategori yang tepat</p>
+                <p>3. Dapatkan skor maksimal!</p>
+            </div>
+
+            <button class="btn" onclick="startGame()">Mulai Bermain</button>
+        </div>
+
+        <!-- Halaman Game -->
+        <div class="game-page" id="gamePage">
+            <div class="game-header">
+                <div class="game-title">Science Sort</div>
+                <div class="score">Skor: <span id="scoreValue">0</span></div>
+            </div>
+
+            <div class="topic-selector">
+                <button class="topic-btn active" onclick="selectTopic('living')">Makhluk Hidup vs Benda Mati</button>
+                <button class="topic-btn" onclick="selectTopic('states')">Wujud Zat</button>
+                <button class="topic-btn" onclick="selectTopic('energy')">Energi</button>
+            </div>
+
+            <div class="game-area">
+                <div class="items-panel">
+                    <h3 class="panel-title">Seret Item Ini</h3>
+                    <div class="items-container" id="itemsContainer">
+                        <!-- Items akan diisi oleh JavaScript -->
+                    </div>
+                </div>
+
+                <div class="categories-panel" id="categoriesPanel">
+                    <!-- Categories akan diisi oleh JavaScript -->
+                </div>
+            </div>
+
+            <div class="game-controls">
+                <button class="btn btn-secondary" onclick="resetGame()">Reset</button>
+                <button class="btn" onclick="checkAnswers()">Periksa Jawaban</button>
+                <button class="btn btn-secondary" onclick="goHome()">Kembali</button>
+            </div>
+        </div>
+
+        <!-- Halaman Hasil -->
+        <div class="result-page" id="resultPage">
+            <div class="result-icon" id="resultIcon">🎉</div>
+            <h2 class="result-title" id="resultTitle">Kamu Hebat!</h2>
+            <p class="result-message" id="resultMessage">Semua jawaban benar!</p>
+            
+            <div class="result-stats">
+                <p><strong>Skor Akhir:</strong> <span id="finalScore">0</span></p>
+                <p><strong>Jawaban Benar:</strong> <span id="correctAnswers">0</span></p>
+                <p><strong>Total Soal:</strong> <span id="totalQuestions">0</span></p>
+            </div>
+
+            <div class="game-controls">
+                <button class="btn" onclick="playAgain()">Main Lagi</button>
+                <button class="btn btn-secondary" onclick="goHome()">Kembali ke Menu</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Panel -->
+    <button class="admin-toggle" onclick="toggleAdmin()">⚙️</button>
+    <div class="admin-panel" id="adminPanel">
+        <div class="admin-section">
+            <h4>Tambah Item Baru</h4>
+            <input type="text" class="admin-input" id="newItemText" placeholder="Nama item">
+            <select class="admin-input" id="newItemCategory">
+                <option value="">Pilih kategori</option>
+            </select>
+            <select class="admin-input" id="newItemTopic">
+                <option value="living">Makhluk Hidup</option>
+                <option value="states">Wujud Zat</option>
+                <option value="energy">Energi</option>
+            </select>
+            <button class="admin-btn" onclick="addNewItem()">Tambah</button>
+        </div>
+        
+        <div class="admin-section">
+            <h4>Edit Kategori</h4>
+            <input type="text" class="admin-input" id="newCategoryName" placeholder="Nama kategori baru">
+            <button class="admin-btn" onclick="addCategory()">Tambah Kategori</button>
+        </div>
+    </div>
+
+    <script>
+        // Data game yang bisa diedit guru
+        let gameData = {
+            living: {
+                categories: ['Makhluk Hidup', 'Benda Mati'],
+                items: [
+                    { text: '🌱 Tumbuhan', category: 'Makhluk Hidup' },
+                    { text: '🐱 Kucing', category: 'Makhluk Hidup' },
+                    { text: '🦋 Kupu-kupu', category: 'Makhluk Hidup' },
+                    { text: '🪨 Batu', category: 'Benda Mati' },
+                    { text: '📚 Buku', category: 'Benda Mati' },
+                    { text: '⚽ Bola', category: 'Benda Mati' }
+                ]
+            },
+            states: {
+                categories: ['Padat', 'Cair', 'Gas'],
+                items: [
+                    { text: '🧊 Es', category: 'Padat' },
+                    { text: '💧 Air', category: 'Cair' },
+                    { text: '☁️ Uap', category: 'Gas' },
+                    { text: '🪨 Batu', category: 'Padat' },
+                    { text: '🥛 Susu', category: 'Cair' },
+                    { text: '💨 Angin', category: 'Gas' }
+                ]
+            },
+            energy: {
+                categories: ['Terbarukan', 'Tidak Terbarukan'],
+                items: [
+                    { text: '☀️ Matahari', category: 'Terbarukan' },
+                    { text: '💨 Angin', category: 'Terbarukan' },
+                    { text: '💧 Air', category: 'Terbarukan' },
+                    { text: '⛽ Minyak', category: 'Tidak Terbarukan' },
+                    { text: '⚡ Gas Alam', category: 'Tidak Terbarukan' },
+                    { text: '🪨 Batu Bara', category: 'Tidak Terbarukan' }
+                ]
+            }
+        };
+
+        let currentTopic = 'living';
+        let score = 0;
+        let draggedItem = null;
+        let gameState = {};
+
+        function startGame() {
+            document.getElementById('welcomePage').style.display = 'none';
+            document.getElementById('gamePage').style.display = 'flex';
+            loadTopic(currentTopic);
+        }
+
+        function selectTopic(topic) {
+            currentTopic = topic;
+            document.querySelectorAll('.topic-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            loadTopic(topic);
+            resetGame();
+        }
+
+        function loadTopic(topic) {
+            const data = gameData[topic];
+            const itemsContainer = document.getElementById('itemsContainer');
+            const categoriesPanel = document.getElementById('categoriesPanel');
+
+            // Load items
+            itemsContainer.innerHTML = '';
+            data.items.forEach((item, index) => {
+                const itemElement = document.createElement('div');
+                itemElement.className = 'drag-item';
+                itemElement.draggable = true;
+                itemElement.textContent = item.text;
+                itemElement.dataset.category = item.category;
+                itemElement.dataset.index = index;
+                
+                itemElement.addEventListener('dragstart', handleDragStart);
+                itemElement.addEventListener('dragend', handleDragEnd);
+                
+                itemsContainer.appendChild(itemElement);
+            });
+
+            // Load categories
+            categoriesPanel.innerHTML = '';
+            data.categories.forEach(category => {
+                const dropZone = document.createElement('div');
+                dropZone.className = 'drop-zone';
+                dropZone.dataset.category = category;
+                
+                dropZone.innerHTML = `
+                    <h3>${category}</h3>
+                    <p>Letakkan item di sini</p>
+                    <div class="dropped-items"></div>
+                `;
+                
+                dropZone.addEventListener('dragover', handleDragOver);
+                dropZone.addEventListener('drop', handleDrop);
+                dropZone.addEventListener('dragleave', handleDragLeave);
+                
+                categoriesPanel.appendChild(dropZone);
+            });
+
+            // Update admin panel
+            updateAdminPanel();
+        }
+
+        function handleDragStart(e) {
+            draggedItem = e.target;
+            e.target.classList.add('dragging');
+        }
+
+        function handleDragEnd(e) {
+            e.target.classList.remove('dragging');
+            draggedItem = null;
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.currentTarget.classList.add('drag-over');
+        }
+
+        function handleDragLeave(e) {
+            e.currentTarget.classList.remove('drag-over');
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            e.currentTarget.classList.remove('drag-over');
+            
+            if (draggedItem) {
+                const dropZone = e.currentTarget;
+                const droppedItems = dropZone.querySelector('.dropped-items');
+                
+                // Create dropped item
+                const droppedItem = document.createElement('div');
+                droppedItem.className = 'dropped-item';
+                droppedItem.textContent = draggedItem.textContent;
+                droppedItem.dataset.category = draggedItem.dataset.category;
+                droppedItem.dataset.index = draggedItem.dataset.index;
+                
+                droppedItems.appendChild(droppedItem);
+                
+                // Remove from items container
+                draggedItem.remove();
+                
+                // Store in game state
+                if (!gameState[dropZone.dataset.category]) {
+                    gameState[dropZone.dataset.category] = [];
+                }
+                gameState[dropZone.dataset.category].push({
+                    text: droppedItem.textContent,
+                    correctCategory: droppedItem.dataset.category,
+                    index: droppedItem.dataset.index
+                });
+            }
+        }
+
+        function checkAnswers() {
+            let correct = 0;
+            let total = 0;
+            
+            Object.keys(gameState).forEach(category => {
+                gameState[category].forEach(item => {
+                    total++;
+                    if (item.correctCategory === category) {
+                        correct++;
+                    }
+                });
+            });
+
+            score = Math.round((correct / total) * 100);
+            document.getElementById('scoreValue').textContent = score;
+            
+            showResults(correct, total);
+        }
+
+        function showResults(correct, total) {
+            document.getElementById('gamePage').style.display = 'none';
+            document.getElementById('resultPage').style.display = 'flex';
+            
+            const percentage = (correct / total) * 100;
+            const resultIcon = document.getElementById('resultIcon');
+            const resultTitle = document.getElementById('resultTitle');
+            const resultMessage = document.getElementById('resultMessage');
+            
+            if (percentage >= 80) {
+                resultIcon.textContent = '🎉';
+                resultTitle.textContent = 'Kamu Hebat!';
+                resultMessage.textContent = 'Pemahaman IPA kamu sangat baik!';
+            } else if (percentage >= 60) {
+                resultIcon.textContent = '👍';
+                resultTitle.textContent = 'Bagus!';
+                resultMessage.textContent = 'Terus belajar untuk hasil yang lebih baik!';
+            } else {
+                resultIcon.textContent = '📚';
+                resultTitle.textContent = 'Coba Lagi!';
+                resultMessage.textContent = 'Pelajari materi lebih dalam ya!';
+            }
+            
+            document.getElementById('finalScore').textContent = score;
+            document.getElementById('correctAnswers').textContent = correct;
+            document.getElementById('totalQuestions').textContent = total;
+        }
+
+        function resetGame() {
+            gameState = {};
+            score = 0;
+            document.getElementById('scoreValue').textContent = score;
+            loadTopic(currentTopic);
+        }
+
+        function playAgain() {
+            document.getElementById('resultPage').style.display = 'none';
+            document.getElementById('gamePage').style.display = 'flex';
+            resetGame();
+        }
+
+        function goHome() {
+            document.getElementById('gamePage').style.display = 'none';
+            document.getElementById('resultPage').style.display = 'none';
+            document.getElementById('welcomePage').style.display = 'flex';
+            resetGame();
+        }
+
+        // Admin Functions
+        function toggleAdmin() {
+            const panel = document.getElementById('adminPanel');
+            panel.classList.toggle('show');
+        }
+
+        function updateAdminPanel() {
+            const categorySelect = document.getElementById('newItemCategory');
+            categorySelect.innerHTML = '<option value="">Pilih kategori</option>';
+            
+            gameData[currentTopic].categories.forEach(category => {
+                const option = document.createElement('option');
+                option.value = category;
+                option.textContent = category;
+                categorySelect.appendChild(option);
+            });
+        }
+
+        function addNewItem() {
+            const text = document.getElementById('newItemText').value;
+            const category = document.getElementById('newItemCategory').value;
+            const topic = document.getElementById('newItemTopic').value;
+            
+            if (text && category && topic) {
+                gameData[topic].items.push({ text, category });
+                document.getElementById('newItemText').value = '';
+                document.getElementById('newItemCategory').value = '';
+                
+                if (topic === currentTopic) {
+                    loadTopic(currentTopic);
+                }
+                
+                alert('Item berhasil ditambahkan!');
+            } else {
+                alert('Mohon isi semua field!');
+            }
+        }
+
+        function addCategory() {
+            const categoryName = document.getElementById('newCategoryName').value;
+            
+            if (categoryName) {
+                gameData[currentTopic].categories.push(categoryName);
+                document.getElementById('newCategoryName').value = '';
+                loadTopic(currentTopic);
+                alert('Kategori berhasil ditambahkan!');
+            } else {
+                alert('Mohon isi nama kategori!');
+            }
+        }
+
+        // Initialize game
+        document.addEventListener('DOMContentLoaded', function() {
+            loadTopic(currentTopic);
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'99529fe2c75c3e4e',t:'MTc2MTU3MjYyOS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
