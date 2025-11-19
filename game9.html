@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TTS Informatika Interaktif (REVISI) - Tailwind CSS (Fixed)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <style type="text/tailwindcss">
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        .cell {
+            @apply w-9 h-9 border border-gray-300 text-center leading-9 text-lg font-bold text-gray-800 bg-gray-100 cursor-pointer relative transition-all duration-200 box-border;
+            @apply md:w-7 md:h-7 md:leading-7 md:text-sm;
+        }
+        .cell.empty {
+            @apply bg-blue-800 border-blue-800 cursor-default;
+        }
+        .cell input {
+            @apply w-full h-full border-none text-center text-lg font-bold uppercase p-0 m-0 bg-transparent outline-none focus:outline-none caret-blue-600 box-border;
+            /* Tambahkan style untuk input yang nonaktif (disabled) */
+            @apply disabled:bg-transparent disabled:text-white; 
+        }
+        .cell .number {
+            @apply absolute top-0.5 left-0.5 text-[0.6em] text-gray-900 font-bold bg-white/70 px-0.5 py-px rounded-sm;
+        }
+        .clue-item {
+            @apply mb-2.5 cursor-pointer p-1 rounded transition-colors duration-200 hover:bg-blue-100;
+        }
+        .cell.highlight {
+            @apply bg-amber-400;
+        }
+        /* Sel aktif akan tetap kuning meskipun sudah benar (untuk menunjukkan fokus) */
+        .cell.active {
+            @apply bg-amber-400 shadow-lg shadow-amber-400/50;
+        }
+        .cell.correct {
+            @apply bg-green-600 text-white;
+            animation: pulse 0.5s ease-out;
+        }
+        /* Pastikan input yang nonaktif di sel yang benar tetap terlihat bagus */
+        .cell.correct input:disabled {
+            @apply text-white;
+        }
+        .clue-item.solved {
+            @apply line-through text-gray-500;
+        }
+        .clue-item.active-clue {
+            @apply bg-amber-400 font-bold shadow-md shadow-amber-400/50;
+        }
+        .action-button {
+            @apply py-2.5 px-5 rounded-lg text-base font-bold cursor-pointer transition-all duration-300;
+        }
+    </style>
+</head>
+<body class="font-sans bg-blue-50 text-gray-800 flex justify-center items-center min-h-screen p-5">
+
+    <div class="bg-white p-8 rounded-lg shadow-2xl max-w-5xl w-[95%] flex flex-col gap-5 md:p-4 md:w-full md:shadow-none">
+        <h1 class="text-blue-600 text-center mb-1 text-4xl font-bold">Crossword TIK Interaktif 💻</h1>
+        <p class="text-center text-gray-500">Klik pada sel untuk memulai pengisian kata, lalu gunakan tombol **Check**!</p>
+
+        <div class="flex gap-5 flex-wrap md:flex-col">
+            <div class="flex-1 basis-[450px] min-w-[300px] flex justify-center items-start md:order-1 md:w-full">
+                <div id="crosswordGrid" class="grid border-2 border-blue-800 shadow-md">
+                </div>
+            </div>
+
+            <div class="flex-1 basis-[400px] bg-gray-50 p-5 rounded-lg border border-gray-200 md:order-2 md:w-full md:p-4">
+                <div id="cluesContent">
+                </div>
+            </div>
+        </div>
+
+        <div class="flex justify-center gap-4 mt-5 md:flex-col">
+            <button id="checkBtn" class="action-button bg-green-600 text-white hover:bg-green-700" onclick="checkAllWords()">✅ Cek Jawaban</button>
+            <button id="resetBtn" class="action-button bg-red-600 text-white hover:bg-red-700" onclick="resetGame()">🔄 Reset Game</button>
+        </div>
+    </div>
+
+    <script>
+        // --- JavaScript Logic ---
+
+        const GRID_SIZE = 10;
+        
+        const TTS_DATA = [
+            // Mendatar (Across - A)
+            { number: 1, answer: "HTML", r: 0, c: 0, direction: 'A', clue: "Bahasa markah standar untuk dokumen yang dirancang untuk ditampilkan di peramban internet." },
+            { number: 2, answer: "SERVER", r: 2, c: 4, direction: 'A', clue: "Sistem komputer yang menyediakan layanan di jaringan." },
+            { number: 3, answer: "VIRUS", r: 4, c: 0, direction: 'A', clue: "Program jahat yang menyebar dengan menyisipkan dirinya ke program lain." },
+            { number: 4, answer: "CSS", r: 6, c: 7, direction: 'A', clue: "Bahasa stylesheet untuk mendeskripsikan presentasi dokumen yang ditulis dalam bahasa markah." },
+            { number: 5, answer: "BROWSER", r: 8, c: 3, direction: 'A', clue: "Perangkat lunak untuk mengakses, mempresentasikan, dan melintasi informasi di World Wide Web." },
+
+            // Menurun (Down - D)
+            { number: 1, answer: "HARDWARE", r: 0, c: 0, direction: 'D', clue: "Perangkat keras fisik yang membentuk sistem komputer." },
+            { number: 6, answer: "RAM", r: 0, c: 5, direction: 'D', clue: "Memori utama tempat data aktif disimpan sementara." },
+            { number: 7, answer: "ALGORITMA", r: 2, c: 4, direction: 'D', clue: "Prosedur langkah-demi-langkah untuk menyelesaikan masalah." },
+            { number: 8, answer: "BIT", r: 6, c: 8, direction: 'D', clue: "Satuan informasi terkecil dalam komputasi." },
+            { number: 9, answer: "JAVA", r: 5, c: 2, direction: 'D', clue: "Bahasa pemrograman populer yang digunakan untuk aplikasi enterprise dan mobile." }
+        ].map(item => ({
+            ...item,
+            answer: item.answer.toUpperCase(),
+            solved: false 
+        }));
+
+        let grid = [];
+        let activeInput = null;
+        let activeClue = null;
+
+        // (Fungsi initializeGrid tidak berubah)
+        function initializeGrid() {
+            grid = Array(GRID_SIZE).fill(null).map(() => 
+                Array(GRID_SIZE).fill({ char: '', inputs: [] })
+            );
+
+            TTS_DATA.forEach(word => {
+                const { answer, r, c, direction, number } = word;
+                const len = answer.length;
+                
+                let dr = (direction === 'D' ? 1 : 0);
+                let dc = (direction === 'A' ? 1 : 0);
+
+                for (let i = 0; i < len; i++) {
+                    const row = r + i * dr;
+                    const col = c + i * dc;
+                    if (row >= 0 && row < GRID_SIZE && col >= 0 && col < GRID_SIZE) {
+                         let cellData = grid[row][col];
+                         grid[row][col] = {
+                            char: answer[i],
+                            inputs: cellData.inputs.concat({
+                                number: (i === 0 ? number : 0),
+                                direction: direction
+                            })
+                        };
+                    }
+                }
+            });
+        }
+        
+        // (Fungsi renderGrid tidak berubah)
+        function renderGrid() {
+            const gridElement = document.getElementById('crosswordGrid');
+            gridElement.style.gridTemplateColumns = `repeat(${GRID_SIZE}, auto)`;
+            gridElement.innerHTML = '';
+            
+            for (let r = 0; r < GRID_SIZE; r++) {
+                for (let c = 0; c < GRID_SIZE; c++) {
+                    const cellData = grid[r][c];
+                    const cell = document.createElement('div');
+                    cell.classList.add('cell'); 
+                    cell.dataset.r = r;
+                    cell.dataset.c = c;
+                    cell.id = `cell-${r}-${c}`;
+
+                    if (cellData.char !== '') {
+                        const input = document.createElement('input');
+                        input.type = 'text';
+                        input.maxLength = 1;
+                        input.oninput = (e) => handleInput(e.target, r, c);
+                        input.onclick = () => activateCell(r, c, input);
+                        input.onfocus = () => activateCell(r, c, input);
+                        input.onkeydown = (e) => handleKey(e, r, c);
+                        cell.appendChild(input);
+
+                        const cellNumbers = cellData.inputs
+                            .filter(input => input.number > 0)
+                            .map(input => input.number);
+
+                        if (cellNumbers.length > 0) {
+                            const numberSpan = document.createElement('span');
+                            numberSpan.classList.add('number'); 
+                            numberSpan.textContent = cellNumbers[0]; 
+                            cell.appendChild(numberSpan);
+                        }
+
+                        const existingInput = document.querySelector(`#cell-${r}-${c} input`);
+                        if(existingInput) {
+                            input.value = existingInput.value;
+                            if (existingInput.parentElement.classList.contains('correct')) {
+                                cell.classList.add('correct');
+                            }
+                        }
+                    } else {
+                        cell.classList.add('empty'); 
+                    }
+                    gridElement.appendChild(cell);
+                }
+            }
+        }
+        
+        // (Fungsi renderClues tidak berubah)
+        function renderClues() {
+            const content = document.getElementById('cluesContent');
+            content.innerHTML = `
+                <h2 class="text-blue-600 border-b-2 border-blue-600 pb-1 mt-0 text-xl font-bold">Mendatar (A)</h2>
+                <ul class="list-none p-0 mt-2" id="cluesA"></ul>
+                <h2 class="text-blue-600 border-b-2 border-blue-600 pb-1 mt-4 text-xl font-bold">Menurun (D)</h2>
+                <ul class="list-none p-0 mt-2" id="cluesD"></ul>
+            `;
+            
+            TTS_DATA.forEach(item => {
+                const listId = item.direction === 'A' ? 'cluesA' : 'cluesD';
+                const list = document.getElementById(listId);
+                const li = document.createElement('li');
+                li.classList.add('clue-item'); 
+                li.id = `clue-${item.number}-${item.direction}`;
+                li.textContent = `${item.number}. ${item.clue}`;
+                li.onclick = () => selectClue(item.number, item.direction);
+
+                if (item.solved) {
+                    li.classList.add('solved'); 
+                }
+                
+                if (activeClue && item.number === activeClue.number && item.direction === activeClue.direction) {
+                    li.classList.add('active-clue');
+                }
+                list.appendChild(li);
+            });
+        }
+        
+        // (Fungsi selectClue tidak berubah)
+        function selectClue(number, direction) {
+            document.querySelectorAll('.cell.highlight, .cell.active').forEach(cell => {
+                cell.classList.remove('highlight', 'active');
+            });
+            document.querySelectorAll('.clue-item.active-clue').forEach(clue => {
+                clue.classList.remove('active-clue');
+            });
+
+            const wordData = TTS_DATA.find(w => w.number === number && w.direction === direction);
+            if (!wordData) return;
+            if (wordData.solved) return; // Jangan pilih kata yang sudah selesai
+
+            activeClue = wordData;
+            document.getElementById(`clue-${number}-${direction}`).classList.add('active-clue');
+
+            const len = wordData.answer.length;
+            let dr = (direction === 'D' ? 1 : 0);
+            let dc = (direction === 'A' ? 1 : 0);
+            let firstInput = null;
+
+            for (let i = 0; i < len; i++) {
+                const r = wordData.r + i * dr;
+                const c = wordData.c + i * dc;
+                const cell = document.getElementById(`cell-${r}-${c}`);
+                if (cell) {
+                    cell.classList.add('highlight');
+                    const input = cell.querySelector('input');
+                    if (input && !firstInput && !input.disabled) {
+                        firstInput = input;
+                    }
+                }
+            }
+            
+            if (firstInput) {
+                firstInput.focus();
+                firstInput.parentElement.classList.add('active');
+                activeInput = firstInput;
+            }
+        }
+
+        /**
+         * --- FIX 1: Logika yang diperbarui untuk menangani klik sel ---
+         * Logika ini sekarang menangani klik ulang pada sel persimpangan
+         * untuk mengubah arah (Mendatar <-> Menurun).
+         */
+        function activateCell(r, c, input) {
+            const cellData = grid[r][c];
+            if (!cellData || cellData.inputs.length === 0) return;
+
+            const clickedCellElement = input.parentElement;
+            const isSameCellClick = activeInput && activeInput.parentElement === clickedCellElement;
+            
+            let targetDirection;
+
+            const infoA = cellData.inputs.find(i => i.direction === 'A');
+            const infoD = cellData.inputs.find(i => i.direction === 'D');
+
+            if (infoA && infoD) {
+                // Ini adalah sel persimpangan
+                if (isSameCellClick && activeClue) {
+                    // Klik sel yang sama: Toggle arah
+                    targetDirection = activeClue.direction === 'A' ? 'D' : 'A';
+                } else {
+                    // Klik sel baru: Default ke Mendatar (A)
+                    targetDirection = 'A';
+                }
+            } else if (infoA) {
+                targetDirection = 'A';
+            } else {
+                targetDirection = 'D';
+            }
+
+            // Temukan data kata lengkap yang sesuai dengan arah yang kita pilih
+            const fullWordData = TTS_DATA.find(w => {
+                if (w.direction !== targetDirection) return false;
+                if (w.direction === 'A') {
+                    return w.r === r && c >= w.c && c < (w.c + w.answer.length);
+                } else { // 'D'
+                    return w.c === c && r >= w.r && r < (w.r + w.answer.length);
+                }
+            });
+
+            if (!fullWordData) return; 
+
+            // Panggil selectClue dengan info kata yang benar
+            selectClue(fullWordData.number, fullWordData.direction);
+
+            // Tetap aktifkan sel yang DIKLIK (bukan hanya sel pertama)
+            document.querySelectorAll('.cell.active').forEach(cell => cell.classList.remove('active'));
+            clickedCellElement.classList.add('active');
+            activeInput = input;
+            input.focus(); // Pastikan fokus
+        }
+        
+        // (Fungsi handleInput tidak berubah)
+        function handleInput(input, r, c) {
+            input.value = input.value.toUpperCase();
+            
+            if (input.value.length === 1 && activeClue) {
+                const len = activeClue.answer.length;
+                let dr = (activeClue.direction === 'D' ? 1 : 0);
+                let dc = (activeClue.direction === 'A' ? 1 : 0);
+                
+                let currentIndex;
+                if (activeClue.direction === 'D') {
+                    currentIndex = r - activeClue.r;
+                } else {
+                    currentIndex = c - activeClue.c;
+                }
+
+                if (currentIndex < len - 1) {
+                    const nextR = activeClue.r + (currentIndex + 1) * dr;
+                    const nextC = activeClue.c + (currentIndex + 1) * dc;
+                    const nextCell = document.getElementById(`cell-${nextR}-${nextC}`);
+                    const nextInput = nextCell ? nextCell.querySelector('input') : null;
+                    
+                    if (nextInput) {
+                        // Gunakan activateCell untuk memindahkan fokus dan highlight
+                        activateCell(nextR, nextC, nextInput);
+                    }
+                }
+            }
+        }
+        
+        /**
+         * --- FIX 2: Navigasi Tombol Panah yang Konsisten ---
+         * Tombol panah sekarang bergerak di sepanjang kata yang aktif,
+         * sama seperti logika 'handleInput' dan 'Backspace'.
+         */
+        function handleKey(e, r, c) {
+            if (!activeClue) return; // Jangan lakukan apa-apa jika tidak ada kata yang aktif
+
+            const { answer, r: startR, c: startC, direction } = activeClue;
+            const len = answer.length;
+            let dr = (direction === 'D' ? 1 : 0);
+            let dc = (direction === 'A' ? 1 : 0);
+            
+            let currentIndex = (direction === 'A') ? (c - startC) : (r - startR);
+            let targetIndex = -1; // Indeks tujuan (dalam kata)
+
+            switch (e.key) {
+                case 'ArrowRight':
+                    if (direction === 'A' && currentIndex < len - 1) targetIndex = currentIndex + 1;
+                    break;
+                case 'ArrowLeft':
+                    if (direction === 'A' && currentIndex > 0) targetIndex = currentIndex - 1;
+                    break;
+                case 'ArrowDown':
+                    if (direction === 'D' && currentIndex < len - 1) targetIndex = currentIndex + 1;
+                    break;
+                case 'ArrowUp':
+                    if (direction === 'D' && currentIndex > 0) targetIndex = currentIndex - 1;
+                    break;
+                case 'Backspace':
+                    // Jika input kosong DAN bukan sel pertama, mundur
+                    if (e.target.value === '' && currentIndex > 0) {
+                        targetIndex = currentIndex - 1;
+                        // Select() agar pengguna bisa langsung mengetik ulang
+                        setTimeout(() => {
+                            const prevInput = document.getElementById(`cell-${startR + targetIndex * dr}-${startC + targetIndex * dc}`)?.querySelector('input');
+                            if(prevInput) prevInput.select();
+                        }, 0);
+                    }
+                    // Biarkan backspace default terjadi jika ada isinya
+                    if (e.target.value !== '') return;
+                    break;
+                default:
+                    return; // Abaikan tombol lain
+            }
+
+            // Jika ada targetIndex yang valid (panah atau backspace)
+            if (targetIndex !== -1) {
+                e.preventDefault(); 
+                const nextR = startR + targetIndex * dr;
+                const nextC = startC + targetIndex * dc;
+                
+                const nextCell = document.getElementById(`cell-${nextR}-${nextC}`);
+                const nextInput = nextCell ? nextCell.querySelector('input') : null;
+
+                if (nextInput) {
+                    activateCell(nextR, nextC, nextInput); // Pindahkan fokus & highlight
+                }
+            } else if (['ArrowRight', 'ArrowLeft', 'ArrowUp', 'ArrowDown'].includes(e.key)) {
+                 e.preventDefault(); // Mencegah navigasi keluar dari kata jika di ujung
+            }
+        }
+
+        /**
+         * --- FIX 3: Nonaktifkan Input yang Benar ---
+         * Saat kata diperiksa dan benar, nonaktifkan inputnya.
+         */
+        function checkAllWords() {
+            let allCorrect = true;
+            
+            TTS_DATA.forEach(word => {
+                // Logika untuk kata yang sudah solved tetap sama
+                if (word.solved) {
+                    const { r, c, direction } = word;
+                    let dr = (direction === 'D' ? 1 : 0);
+                    let dc = (direction === 'A' ? 1 : 0);
+                    for (let i = 0; i < word.answer.length; i++) {
+                         const cell = document.getElementById(`cell-${r + i * dr}-${c + i * dc}`);
+                         cell.classList.add('correct');
+                         const input = cell.querySelector('input');
+                         if (input) input.disabled = true; // Pastikan tetap nonaktif
+                    }
+                    return;
+                }
+
+                const { answer, r, c, direction } = word;
+                const len = answer.length;
+                let userAnswer = '';
+                
+                let dr = (direction === 'D' ? 1 : 0);
+                let dc = (direction === 'A' ? 1 : 0);
+
+                for (let i = 0; i < len; i++) {
+                    const row = r + i * dr;
+                    const col = c + i * dc;
+                    const cell = document.getElementById(`cell-${row}-${col}`);
+                    const input = cell ? cell.querySelector('input') : null;
+                    userAnswer += input ? input.value.toUpperCase() : '';
+                }
+
+                if (userAnswer === answer) {
+                    word.solved = true;
+                    for (let i = 0; i < len; i++) {
+                        const row = r + i * dr;
+                        const col = c + i * dc;
+                        const cell = document.getElementById(`cell-${row}-${col}`);
+                        cell.classList.add('correct');
+                        
+                        // --- INI PERBAIKANNYA ---
+                        const input = cell.querySelector('input');
+                        if (input) {
+                            input.disabled = true;
+                        }
+                    }
+                } else {
+                    allCorrect = false;
+                }
+            });
+
+            renderClues();
+            
+            if (allCorrect && TTS_DATA.every(w => w.solved)) {
+                setTimeout(() => alert("🎉 SELAMAT! Semua TTS TIK berhasil Anda jawab dengan benar!"), 100);
+                activeClue = null; // Hapus highlight aktif
+                activeInput = null;
+                 document.querySelectorAll('.cell.highlight, .cell.active').forEach(cell => {
+                    cell.classList.remove('highlight', 'active');
+                });
+            } else if (!allCorrect) {
+                alert("Ada beberapa jawaban yang masih salah atau belum terisi. Sel berwarna hijau adalah jawaban yang benar!");
+            }
+        }
+        
+        /**
+         * --- FIX 3: Aktifkan Kembali Input Saat Reset ---
+         */
+        function resetGame() {
+            if (!confirm("Apakah Anda yakin ingin mereset permainan? Semua jawaban akan terhapus.")) {
+                return;
+            }
+            
+            TTS_DATA.forEach(word => word.solved = false);
+            activeInput = null;
+            activeClue = null;
+            
+            document.querySelectorAll('.cell input').forEach(input => {
+                input.value = '';
+                input.disabled = false;
+            });
+            
+            document.querySelectorAll('.cell.highlight, .cell.active, .cell.correct').forEach(cell => {
+                cell.classList.remove('highlight', 'active', 'correct');
+            });
+
+            renderClues(); 
+        }
+        function init() {
+            initializeGrid();
+            renderGrid();
+            renderClues();
+        }
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>

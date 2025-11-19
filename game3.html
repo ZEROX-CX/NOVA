@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Ketik Cepat TIK</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="font-mono bg-[#1e1e1e] text-[#d4d4d4] flex flex-col justify-center items-center min-h-screen m-0">
+
+    <div id="game-area" class="bg-[#252526] p-10 rounded-lg shadow-[0_0_20px_rgba(0,255,0,0.3)] w-11/12 max-w-[700px] text-center">
+        <h1 class="text-[#00ff00] mb-8 border-b-2 border-[#00ff00] pb-2 text-3xl font-bold">⌨️ Typing Master TIK</h1>
+        <p class="mb-6">Ketik istilah TIK yang muncul di bawah ini secepat mungkin!</p>
+
+        <div id="timer-score" class="flex justify-around w-full mb-6 text-lg">
+            <div class="info-box px-4 py-2 bg-[#3e3e42] rounded">Waktu: <span id="timer">30</span> detik</div>
+            <div class="info-box px-4 py-2 bg-[#3e3e42] rounded">Skor: <span id="score">0</span></div>
+        </div>
+
+        <div id="word-to-type" class="text-4xl my-5 text-[#ff9900] select-none">Tekan MULAI</div>
+
+        <input type="text" id="input-field" placeholder="Mulai mengetik di sini..."
+            class="w-4/5 p-4 text-2xl border-4 border-gray-500 rounded bg-[#333] text-white text-center mb-5 outline-none focus:border-[#00ff00]"
+            disabled>
+
+        <div id="result-display" class="text-2xl mt-5 text-[#00ff00]"></div>
+        
+        <button id="start-btn" class="px-6 py-3 text-xl bg-blue-600 text-white rounded hover:bg-blue-800 transition">Mulai Game</button>
+        <button id="restart-btn" class="px-6 py-3 text-xl bg-blue-600 text-white rounded hover:bg-blue-800 transition hidden">Main Lagi</button>
+    </div>
+
+    <script>
+        // 💡 DATA ISTILAH TIK
+        const TIK_WORDS = [
+            "Algoritma", "Browser", "Database", "Firewall", "Hyperlink", 
+            "Malware", "OperatingSystem", "Programming", "Router", "Server", 
+            "Syntax", "Variable", "Ethernet", "CloudComputing", "URL",
+            "HTML", "CSS", "JavaScript", "Kompresi", "Resolusi"
+        ];
+
+        let currentWord = "";
+        let score = 0;
+        let timeLeft = 30;
+        let timerInterval;
+        let gameActive = false;
+        
+        const wordToTypeElement = document.getElementById('word-to-type');
+        const inputField = document.getElementById('input-field');
+        const timerElement = document.getElementById('timer');
+        const scoreElement = document.getElementById('score');
+        const startButton = document.getElementById('start-btn');
+        const restartButton = document.getElementById('restart-btn');
+        const resultDisplay = document.getElementById('result-display');
+
+        function startGame() {
+            if (gameActive) return;
+            
+            score = 0;
+            timeLeft = 30;
+            gameActive = true;
+            scoreElement.textContent = score;
+            timerElement.textContent = timeLeft;
+            startButton.classList.add("hidden");
+            restartButton.classList.add("hidden");
+            resultDisplay.textContent = '';
+            inputField.value = '';
+            inputField.disabled = false;
+            inputField.focus();
+
+            nextWord();
+            startTimer();
+        }
+
+        function startTimer() {
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                timerElement.textContent = timeLeft;
+
+                if (timeLeft <= 0) {
+                    endGame();
+                }
+            }, 1000);
+        }
+
+        function nextWord() {
+            const randomIndex = Math.floor(Math.random() * TIK_WORDS.length);
+            currentWord = TIK_WORDS[randomIndex];
+            wordToTypeElement.innerHTML = `<span class="text-gray-400">${currentWord}</span>`;
+            inputField.value = '';
+        }
+
+        function checkInput() {
+            if (!gameActive) return;
+
+            const typedText = inputField.value;
+            let displayHTML = '';
+            let isCorrect = true;
+
+            for (let i = 0; i < currentWord.length; i++) {
+                const char = currentWord[i];
+                const typedChar = typedText[i];
+
+                if (typedChar == null) {
+                    displayHTML += `<span class="text-gray-400">${char}</span>`;
+                    isCorrect = false;
+                } else if (char === typedChar) {
+                    displayHTML += `<span class="text-[#00ff00]">${char}</span>`;
+                } else {
+                    displayHTML += `<span class="text-red-500 underline">${char}</span>`;
+                    isCorrect = false;
+                }
+            }
+
+            wordToTypeElement.innerHTML = displayHTML;
+
+            if (typedText.length === currentWord.length && isCorrect) {
+                score++;
+                scoreElement.textContent = score;
+                nextWord();
+            }
+        }
+
+        function endGame() {
+            clearInterval(timerInterval);
+            gameActive = false;
+            inputField.disabled = true;
+            wordToTypeElement.textContent = "WAKTU HABIS!";
+            resultDisplay.textContent = `Skor Akhir Anda: ${score} Kata.`;
+            restartButton.classList.remove("hidden");
+        }
+        
+        startButton.addEventListener('click', startGame);
+        restartButton.addEventListener('click', startGame);
+        inputField.addEventListener('input', checkInput);
+
+        wordToTypeElement.textContent = "Tekan MULAI";
+        inputField.disabled = true;
+    </script>
+</body>
+</html>
