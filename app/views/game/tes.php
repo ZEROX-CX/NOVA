@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sorting Algorithm Challenge</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="font-mono bg-[#f0f0f5] text-[#2c3e50] flex flex-col items-center p-5">
+
+  <div id="game-area" class="bg-white p-8 rounded-lg shadow-lg w-[95%] max-w-[700px] text-center">
+    <h1 class="text-[#8e44ad] mb-6 text-2xl font-bold">🔢 Sorting Algorithm Challenge</h1>
+    <p class="mb-4">Urutkan angka dari terkecil ke terbesar. Klik dua balok untuk menukar posisinya (Swap).</p>
+
+    <div id="stats" class="flex justify-around w-full mb-5 bg-[#ecf0f1] p-3 rounded">
+      <span class="font-bold text-lg">Swaps: <span id="swap-count">0</span></span>
+      <span class="font-bold text-lg">Status: <span id="status-text">Siap</span></span>
+    </div>
+
+    <div id="array-container" class="flex justify-center items-end gap-1 min-h-[150px] border-b-2 border-[#34495e] pb-2 mb-8"></div>
+
+    <div id="feedback" class="mt-5 text-lg font-bold min-h-[30px]"></div>
+
+    <button id="start-btn" class="px-6 py-3 text-lg bg-[#9b59b6] text-white rounded hover:bg-[#8e44ad] mt-4">Mulai Game</button>
+    <button id="restart-btn" class="px-6 py-3 text-lg bg-[#e67e22] text-white rounded hover:bg-[#d35400] mt-4 hidden">Main Lagi</button>
+  </div>
+
+  <script>
+    const ARRAY_SIZE = 8;
+    const MAX_VALUE = 50;
+    
+    let currentArray = [];
+    let swapCount = 0;
+    let selectedIndices = [];
+    let gameActive = false;
+    
+    const arrayContainer = document.getElementById('array-container');
+    const swapCountElement = document.getElementById('swap-count');
+    const statusTextElement = document.getElementById('status-text');
+    const feedbackElement = document.getElementById('feedback');
+    const startButton = document.getElementById('start-btn');
+    const restartButton = document.getElementById('restart-btn');
+
+    function generateRandomArray() {
+      let arr = [];
+      while (arr.length < ARRAY_SIZE) {
+        const randomNum = Math.floor(Math.random() * MAX_VALUE) + 1;
+        if (arr.indexOf(randomNum) === -1) {
+          arr.push(randomNum);
+        }
+      }
+      return arr;
+    }
+
+    function isSorted(arr) {
+      for (let i = 0; i < arr.length - 1; i++) {
+        if (arr[i] > arr[i + 1]) return false;
+      }
+      return true;
+    }
+
+    function swapElements(i, j) {
+      [currentArray[i], currentArray[j]] = [currentArray[j], currentArray[i]];
+      swapCount++;
+      swapCountElement.textContent = swapCount;
+      renderArray();
+    }
+
+    function handleBarClick(event) {
+      if (!gameActive) return;
+      const bar = event.currentTarget;
+      const index = parseInt(bar.dataset.index);
+
+      if (selectedIndices.includes(index)) {
+        selectedIndices = selectedIndices.filter(i => i !== index);
+        bar.classList.remove('bg-red-500','scale-105','shadow-md');
+        feedbackElement.textContent = 'Pilih balok pertama.';
+      } else {
+        selectedIndices.push(index);
+        bar.classList.add('bg-red-500','scale-105','shadow-md');
+        
+        if (selectedIndices.length === 2) {
+          const i = selectedIndices[0];
+          const j = selectedIndices[1];
+          swapElements(i, j);
+          document.querySelectorAll('.array-bar').forEach(b => b.classList.remove('bg-red-500','scale-105','shadow-md'));
+          selectedIndices = [];
+          if (isSorted(currentArray)) {
+            endGame();
+          } else {
+            feedbackElement.textContent = 'Swap berhasil. Lanjutkan pengurutan!';
+          }
+        } else {
+          feedbackElement.textContent = 'Pilih balok kedua untuk ditukar.';
+        }
+      }
+    }
+
+    function renderArray() {
+      arrayContainer.innerHTML = '';
+      const isFinished = isSorted(currentArray);
+      const barWidth = 90 / ARRAY_SIZE;
+
+      currentArray.forEach((value, index) => {
+        const bar = document.createElement('div');
+        bar.classList.add('array-bar','bg-blue-500','border','border-blue-700','flex','justify-center','items-start','text-white','font-bold','relative','cursor-pointer','transition','duration-300');
+        const height = (value / MAX_VALUE) * 120 + 20;
+        bar.style.height = `${height}px`;
+        bar.style.width = `${barWidth}%`;
+        bar.dataset.index = index;
+        bar.innerHTML = `<span class="absolute -top-6 text-[#2c3e50] text-sm">${value}</span>`;
+        if (isFinished) {
+          bar.classList.add('bg-green-600');
+        } else {
+          bar.addEventListener('click', handleBarClick);
+        }
+        arrayContainer.appendChild(bar);
+      });
+      statusTextElement.textContent = isFinished ? 'Selesai!' : 'Mengurutkan...';
+    }
+
+    function startGame() {
+      gameActive = true;
+      swapCount = 0;
+      selectedIndices = [];
+      currentArray = generateRandomArray();
+      startButton.classList.add('hidden');
+      restartButton.classList.add('hidden');
+      renderArray();
+      swapCountElement.textContent = swapCount;
+      statusTextElement.textContent = 'Mengurutkan...';
+      feedbackElement.textContent = 'Tantangan dimulai! Urutkan dari terkecil ke terbesar.';
+    }
+
+    function endGame() {
+      gameActive = false;
+      const minSwaps = Math.floor(ARRAY_SIZE * (ARRAY_SIZE - 1) / 4);
+      let finalMessage = `🎉 BERHASIL! Anda mengurutkan array dalam ${swapCount} Swaps.`;
+      if (swapCount <= minSwaps) {
+        finalMessage += " Itu sangat EFISIEN (mirip Selection Sort)!";
+      } else if (swapCount > minSwaps + 5) {
+        finalMessage += " Coba lagi untuk mengoptimalkan langkah (Swaps).";
+      }
+      feedbackElement.textContent = finalMessage;
+      restartButton.classList.remove('hidden');
+      renderArray();
+    }
+
+    startButton.addEventListener('click', startGame);
+    restartButton.addEventListener('click', startGame);
+    statusTextElement.textContent = 'Siap';
+    feedbackElement.textContent = 'Tekan Mulai untuk menguji kemampuan algoritma Anda.';
+  </script>
+</body>
+</html>

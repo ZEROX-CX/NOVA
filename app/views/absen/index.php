@@ -1,0 +1,133 @@
+<?php
+// --- LOGIKA APLIKASI ---
+// Semua logika PHP ditempatkan di bagian atas untuk pemisahan yang jelas
+// antara logika server dan tampilan (HTML).
+
+// 1. Inisialisasi Variabel
+ $pertemuan = $data['pertemuan'] ?? []; // Gunakan operator null coalescing untuk keamanan
+ $sesiAbsen = $data['sesi_absen'] ?? [];
+
+// 2. Siapkan Flash Message (jika ada)
+ $flashMessage = null;
+ $messageType = 'info'; // default: info, success, error
+if (isset($_SESSION['flash_message'])) {
+    $flashMessage = $_SESSION['flash_message'];
+    $messageType = $_SESSION['message_type'] ?? 'info';
+    // Hapus session agar tidak muncul lagi saat reload
+    unset($_SESSION['flash_message'], $_SESSION['message_type']);
+}
+
+// 3. Tentukan warna latar untuk flash message berdasarkan tipe
+ $alertColors = [
+    'success' => 'bg-green-100 border-green-400 text-green-700',
+    'error'   => 'bg-red-100 border-red-400 text-red-700',
+    'info'    => 'bg-blue-100 border-blue-400 text-blue-700'
+];
+ $alertClass = $alertColors[$messageType] ?? $alertColors['info'];
+
+?>
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mapelku Guru - Daftar Hadir</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Tambahkan ikon material untuk notifikasi -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+
+<body class="bg-gray-50 min-h-screen font-sans text-gray-800">
+
+<!-- Konten Utama -->
+    <div class="flex">
+        <!-- (Opsional) Sidebar Desktop -->
+        <!-- <aside class="w-64 bg-white shadow-md h-screen sticky top-0 hidden md:block">
+            ... Isi Sidebar Desktop ...
+        </aside> -->
+        <main class="flex-1 max-w-7xl mx-auto px-4 py-10">
+            <!-- Header dengan Tombol Menu Mobile -->
+             <div class="bg-[#7a00ff] flex w-[130px] h-[35px] items-center justify-center rounded mb-4">
+                 <a href="<?= BASEURL ?>/pertemuan_content/<?= $data['id_mapel']?>/<?= $data['id_pertemuan'] ?>" class="text-lg text-white inline-block">&lt; kembali </a>
+             </div>
+            <!-- <header class="flex items-center justify-between mb-6 md:hidden">
+                <button id="menuToggleBtn" class="text-gray-600 hover:text-gray-800 focus:outline-none">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                </button>
+                <h1 class="text-xl font-bold text-purple-700">Mapelku Guru</h1>
+                <div></div>
+                </header> -->
+
+            <section class="bg-white p-6 rounded-lg shadow-md">
+                <h2 class="text-2xl font-bold text-[#7a00ff] mb-6">
+                    Daftar Hadir -<?= $pertemuan['judul_pertemuan'] ?>
+                </h2>
+
+                <!-- Tampilkan Flash Message jika ada -->
+                <?php if ($flashMessage): ?>
+                <div class="border px-4 py-3 rounded relative mb-6 <?= $alertClass ?>" role="alert">
+                    <span class="block sm:inline"><?= htmlspecialchars($flashMessage) ?></span>
+                </div>
+                <?php endif; ?>
+
+                <!-- Form Daftar Hadir -->
+                <form action="<?= BASEURL ?>/absen/tambah/<?= htmlspecialchars($pertemuan['id_pertemuan'] ?? '') ?>" method="post" class="space-y-6">
+                    <div class="overflow-x-auto">
+                        <table class="w-full table-auto border-collapse">
+                            <thead>
+                                <tr class="bg-purple-100 text-purple-700">
+                                    <th scope="col" class="border px-4 py-2 text-left">Tanggal</th>
+                                    <th scope="col" class="border px-4 py-2 text-center">Hadir</th>
+                                    <th scope="col" class="border px-4 py-2 text-center">Izin</th>
+                                    <th scope="col" class="border px-4 py-2 text-center">Sakit</th>
+                                    <th scope="col" class="border px-4 py-2 text-center">Keterangan</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="border px-4 py-2"><?= date('d F Y', strtotime($sesiAbsen['tanggal_buat'] ?? 'now')) ?></td>
+                                    <td class="border px-4 py-2 text-center">
+                                        <input type="radio" name="status" value="hadir" required class="form-radio text-purple-600">
+                                    </td>
+                                    <td class="border px-4 py-2 text-center">
+                                        <input type="radio" name="status" value="izin" class="form-radio text-purple-600">
+                                    </td>
+                                    <td class="border px-4 py-2 text-center">
+                                        <input type="radio" name="status" value="sakit" class="form-radio text-purple-600">
+                                    </td>
+                                    <td class="border px-4 py-2">
+                                        <input type="text" name="keterangan" placeholder="Alasan jika tidak hadir" class="w-full px-3 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500">
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <button type="submit" class="w-full md:w-auto px-8 py-2 bg-[#7a00ff] text-white font-semibold rounded-lg hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50 transition-colors">
+                        Kirim Kehadiran
+                    </button>
+                </form>
+            </section>
+        </main>
+    </div>
+
+    <!-- Toast Notification (Diperbarui via JS) -->
+
+
+    <!-- JavaScript -->
+    <script>
+        // Fungsi untuk menampilkan toast notifikasi
+        function showToast() {
+            const toast = document.getElementById('toast');
+            toast.classList.remove('translate-x-full');
+            
+            // Sembunyikan toast setelah 3 detik
+            setTimeout(() => {
+                toast.classList.add('translate-x-full');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
