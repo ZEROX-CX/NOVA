@@ -106,10 +106,10 @@ class App {
         call_user_func_array([$this->controller, $this->method], $this->params);
     }
 
-    public function parseUrl()
+public function parseUrl()
     {
-        if (isset($_GET['url'])) {
-            $url = rtrim($_GET['url'], '/');
+        if (isset($_SERVER['PATH_INFO'])) {
+            $url = trim($_SERVER['PATH_INFO'], '/');
             $url = filter_var($url, FILTER_SANITIZE_URL);
             return explode('/', $url);
         }
